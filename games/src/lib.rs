@@ -1,4 +1,5 @@
 mod chess;
+mod minesweeper;
 
 use chess::launch_chess;
 use crossterm::{
@@ -6,6 +7,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use minesweeper::launch_minesweeper;
 use std::error::Error;
 use tui::{
     backend::{Backend, CrosstermBackend},
@@ -65,7 +67,7 @@ impl GamesMenuList {
         if let Some(selected) = self.state.selected() {
             match selected {
                 0 => launch_chess(terminal)?,
-                1 => {} // launch minesweeper
+                1 => launch_minesweeper(terminal)?,
                 _ => unreachable!("should not be possible to go out of bounds of the games list"),
             }
         }
