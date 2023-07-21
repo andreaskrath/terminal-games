@@ -13,25 +13,23 @@ use tui::{
     Frame, Terminal,
 };
 
-const LIST_OF_GAMES: [&str; 2] = ["Chess", "Minesweeper"];
-
-struct GamesMenu {
-    menu_state: MainMenuStates,
-    list_state: ListState,
+struct GamesMenuList {
+    state: ListState,
+    items: Box<[&'static str]>,
 }
 
-impl GamesMenu {
+impl GamesMenuList {
     fn new() -> Self {
         let mut new = Self {
-            menu_state: MainMenuStates::Menu,
-            list_state: ListState::default(),
+            state: ListState::default(),
+            items: Box::new(["Chess", "Minesweeper"]),
         };
-        new.list_state.select(Some(0));
+        new.state.select(Some(0));
         new
     }
 
     fn move_up(&mut self) {
-        let selected = match self.list_state.selected() {
+        let selected = match self.state.selected() {
             Some(val) => {
                 if val == 0 {
                     Some(val)
@@ -41,13 +39,13 @@ impl GamesMenu {
             }
             None => Some(0),
         };
-        self.list_state.select(selected);
+        self.state.select(selected);
     }
 
     fn move_down(&mut self) {
-        let selected = match self.list_state.selected() {
+        let selected = match self.state.selected() {
             Some(val) => {
-                if val == LIST_OF_GAMES.len() - 1 {
+                if val == self.items.len() - 1 {
                     Some(val)
                 } else {
                     Some(val + 1)
@@ -55,11 +53,25 @@ impl GamesMenu {
             }
             None => Some(0),
         };
-        self.list_state.select(selected);
+        self.state.select(selected);
+    }
+}
+
+struct GamesMenu {
+    menu_state: MainMenuStates,
+    games_list: GamesMenuList,
+}
+
+impl GamesMenu {
+    fn new() -> Self {
+        Self {
+            menu_state: MainMenuStates::Menu,
+            games_list: GamesMenuList::new(),
+        }
     }
 
     fn change_menu_state(&mut self) {
-        if let Some(val) = self.list_state.selected() {
+        if let Some(val) = self.games_list.state.selected() {
             match val {
                 0 => self.menu_state = MainMenuStates::Chess,
                 1 => self.menu_state = MainMenuStates::Minesweeper,
@@ -105,8 +117,8 @@ fn run_games_menu<B: Backend>(terminal: &mut Terminal<B>) -> Result<(), Box<dyn 
             match state.menu_state {
                 MainMenuStates::Menu => match key.code {
                     KeyCode::Char('q') => return Ok(()),
-                    KeyCode::Up => state.move_up(),
-                    KeyCode::Down => state.move_down(),
+                    KeyCode::Up => state.games_list.move_up(),
+                    KeyCode::Down => state.games_list.move_down(),
                     KeyCode::Enter => state.change_menu_state(),
                     _ => {}
                 },
@@ -158,7 +170,9 @@ fn render_games_menu<B: Backend>(f: &mut Frame<B>, state: &mut GamesMenu) {
         .constraints([Constraint::Length(3), Constraint::Min(1)].as_ref())
         .split(center_area[1]);
 
-    let items: Vec<ListItem<'_>> = LIST_OF_GAMES
+    let items: Vec<ListItem<'_>> = state
+        .games_list
+        .items
         .iter()
         .map(|item| ListItem::new(*item))
         .collect();
@@ -166,5 +180,5 @@ fn render_games_menu<B: Backend>(f: &mut Frame<B>, state: &mut GamesMenu) {
         .block(Block::default())
         .highlight_symbol("->")
         .highlight_style(Style::default().add_modifier(Modifier::BOLD));
-    f.render_stateful_widget(games_list, list_layout[1], &mut state.list_state);
+    f.render_stateful_widget(games_list, list_layout[1], &mut state.games_list.state);
 }
