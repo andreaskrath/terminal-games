@@ -8,10 +8,72 @@ use crossterm::{
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Layout},
-    style::Style,
-    widgets::{Block, BorderType, Borders},
+    style::{Modifier, Style},
+    widgets::{Block, BorderType, Borders, List, ListItem, ListState},
     Frame, Terminal,
 };
+
+const LIST_OF_GAMES: [&str; 2] = ["Chess", "Minesweeper"];
+
+struct GamesMenu {
+    menu_state: MainMenuStates,
+    list_state: ListState,
+}
+
+impl GamesMenu {
+    fn new() -> Self {
+        let mut new = Self {
+            menu_state: MainMenuStates::Menu,
+            list_state: ListState::default(),
+        };
+        new.list_state.select(Some(0));
+        new
+    }
+
+    fn move_up(&mut self) {
+        let selected = match self.list_state.selected() {
+            Some(val) => {
+                if val == 0 {
+                    Some(val)
+                } else {
+                    Some(val - 1)
+                }
+            }
+            None => Some(0),
+        };
+        self.list_state.select(selected);
+    }
+
+    fn move_down(&mut self) {
+        let selected = match self.list_state.selected() {
+            Some(val) => {
+                if val == LIST_OF_GAMES.len() - 1 {
+                    Some(val)
+                } else {
+                    Some(val + 1)
+                }
+            }
+            None => Some(0),
+        };
+        self.list_state.select(selected);
+    }
+
+    fn change_menu_state(&mut self) {
+        if let Some(val) = self.list_state.selected() {
+            match val {
+                0 => self.menu_state = MainMenuStates::Chess,
+                1 => self.menu_state = MainMenuStates::Minesweeper,
+                _ => unreachable!("should not be possible to go out of bounds of main menu"),
+            }
+        }
+    }
+}
+
+enum MainMenuStates {
+    Menu,
+    Chess,
+    Minesweeper,
+}
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     enable_raw_mode()?;
@@ -36,18 +98,26 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 }
 
 fn run_games_menu<B: Backend>(terminal: &mut Terminal<B>) -> Result<(), Box<dyn Error>> {
+    let mut state = GamesMenu::new();
     loop {
-        terminal.draw(|f| render_games_menu(f))?;
+        terminal.draw(|f| render_games_menu(f, &mut state))?;
         if let Key(key) = event::read()? {
-            match key.code {
-                KeyCode::Char('q') => return Ok(()),
-                _ => {}
+            match state.menu_state {
+                MainMenuStates::Menu => match key.code {
+                    KeyCode::Char('q') => return Ok(()),
+                    KeyCode::Up => state.move_up(),
+                    KeyCode::Down => state.move_down(),
+                    KeyCode::Enter => state.change_menu_state(),
+                    _ => {}
+                },
+                MainMenuStates::Chess => todo!(),
+                MainMenuStates::Minesweeper => todo!(),
             }
         }
     }
 }
 
-fn render_games_menu<B: Backend>(f: &mut Frame<B>) {
+fn render_games_menu<B: Backend>(f: &mut Frame<B>, state: &mut GamesMenu) {
     let full_screen = Layout::default()
         .direction(tui::layout::Direction::Horizontal)
         .constraints(
@@ -81,4 +151,20 @@ fn render_games_menu<B: Backend>(f: &mut Frame<B>) {
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
     f.render_widget(menu_block, center_area[1]);
+
+    let list_layout = Layout::default()
+        .margin(2)
+        .direction(tui::layout::Direction::Vertical)
+        .constraints([Constraint::Length(3), Constraint::Min(1)].as_ref())
+        .split(center_area[1]);
+
+    let items: Vec<ListItem<'_>> = LIST_OF_GAMES
+        .iter()
+        .map(|item| ListItem::new(*item))
+        .collect();
+    let games_list = List::new(items)
+        .block(Block::default())
+        .highlight_symbol("->")
+        .highlight_style(Style::default().add_modifier(Modifier::BOLD));
+    f.render_stateful_widget(games_list, list_layout[1], &mut state.list_state);
 }
