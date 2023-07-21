@@ -8,6 +8,7 @@ use crossterm::{
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Layout},
+    style::Style,
     widgets::{Block, BorderType, Borders},
     Frame, Terminal,
 };
@@ -59,10 +60,25 @@ fn render_games_menu<B: Backend>(f: &mut Frame<B>) {
         )
         .split(f.size());
 
+    let full_height_middle_block = Block::default();
+    f.render_widget(full_height_middle_block, full_screen[1]);
+
+    let center_area = Layout::default()
+        .direction(tui::layout::Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage(33),
+                Constraint::Percentage(34),
+                Constraint::Percentage(33),
+            ]
+            .as_ref(),
+        )
+        .split(full_screen[1]);
+
     let menu_block = Block::default()
         .title("Games Menu")
+        .title_alignment(tui::layout::Alignment::Center)
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
-
-    f.render_widget(menu_block, full_screen[1]);
+    f.render_widget(menu_block, center_area[1]);
 }
