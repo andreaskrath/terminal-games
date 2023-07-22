@@ -1,6 +1,5 @@
-use crate::app::{App, AppResult};
+use crate::app::AppResult;
 use crate::event::EventHandler;
-use crate::ui;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use std::io;
@@ -14,7 +13,7 @@ use tui::Terminal;
 #[derive(Debug)]
 pub struct Tui<B: Backend> {
     /// Interface to the Terminal.
-    terminal: Terminal<B>,
+    pub terminal: Terminal<B>,
     /// Terminal event handler.
     pub events: EventHandler,
 }
@@ -33,15 +32,6 @@ impl<B: Backend> Tui<B> {
         crossterm::execute!(io::stderr(), EnterAlternateScreen, EnableMouseCapture)?;
         self.terminal.hide_cursor()?;
         self.terminal.clear()?;
-        Ok(())
-    }
-
-    /// [`Draw`] the terminal interface by [`rendering`] the widgets.
-    ///
-    /// [`Draw`]: tui::Terminal::draw
-    /// [`rendering`]: crate::ui:render
-    pub fn draw(&mut self, app: &mut App) -> AppResult<()> {
-        self.terminal.draw(|frame| ui::render(app, frame))?;
         Ok(())
     }
 
