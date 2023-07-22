@@ -1,2 +1,10 @@
-[workspace]
-members = ["main", "games"]
+[package]
+name = "terminal-games"
+version = "0.1.0"
+authors = ["Andreas Krath <andreas.krath@gmail.com"]
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.26.1"
+tui = { package = "ratatui", version = "0.22.0" }
