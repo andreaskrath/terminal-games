@@ -3,6 +3,7 @@ use terminal_games::app::{App, AppResult};
 use terminal_games::event::{Event, EventHandler};
 use terminal_games::handler::handle_key_events;
 use terminal_games::tui::Tui;
+use terminal_games::ui;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 
@@ -16,10 +17,10 @@ fn main() -> AppResult<()> {
     tui.init()?;
 
     while app.running {
-        tui.draw(&mut app)?;
+        tui.terminal.draw(|frame| ui::render(&mut app, frame))?;
         match tui.events.next()? {
             Event::Tick => app.tick(),
-            Event::Key(key_event) => handle_key_events(key_event, &mut app)?,
+            Event::Key(key_event) => handle_key_events(key_event, &mut app, &mut tui)?,
             Event::Mouse(_) => {}
             Event::Resize(_, _) => {}
         }
