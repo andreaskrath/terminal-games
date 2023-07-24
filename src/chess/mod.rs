@@ -10,7 +10,7 @@ mod ui;
 pub struct Chess<'a, B: Backend> {
     running: bool,
     tui: Option<&'a mut Tui<B>>,
-    game: Game,
+    pub game: Game,
 }
 
 impl<'a, B: Backend> Chess<'a, B> {
