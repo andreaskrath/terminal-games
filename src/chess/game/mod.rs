@@ -18,4 +18,8 @@ impl Game {
             black: Player::new(),
         }
     }
+
+    pub fn owned_board(&self) -> Board {
+        self.board.to_owned()
+    }
 }
