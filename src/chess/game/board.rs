@@ -1,7 +1,9 @@
-use super::pieces::Piece;
+use tui::{style::Style, text::Line, widgets::Widget};
 
+use super::pieces::Piece;
 const CHESS_BOARD_SIZE: usize = 8;
 
+#[derive(Clone)]
 pub struct Board {
     /// Represents the chess board, as a 2D, 8 x 8 array.
     board: [[Option<Piece>; CHESS_BOARD_SIZE]; CHESS_BOARD_SIZE],
@@ -11,6 +13,37 @@ impl Board {
     pub fn new() -> Self {
         Self {
             board: [[None; CHESS_BOARD_SIZE]; CHESS_BOARD_SIZE],
+        }
+    }
+
+    fn rows(self) -> Vec<String> {
+        vec![
+            String::from("  ┌───┬───┬───┬───┬───┬───┬───┬───┐"),
+            String::from("8 │ ♖ │ ♘ │ ♗ │ ♕ │ ♔ │ ♗ │ ♘ │ ♖ │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("7 │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │ ♙ │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("6 │   │   │   │   │   │   │   │   │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("5 │   │   │   │   │   │   │   │   │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("4 │   │   │   │   │ . │   │   │   │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("3 │   │   │   │   │ . │   │   │   │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("2 │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │ ♟ │"),
+            String::from("  ├───┼───┼───┼───┼───┼───┼───┼───┤"),
+            String::from("1 │ ♜ │ ♞ │ ♝ │ ♛ │ ♚ │ ♝ │ ♞ │ ♜ │"),
+            String::from("  └───┴───┴───┴───┴───┴───┴───┴───┘"),
+            String::from("    A   B   C   D   E   F   G   H  "),
+        ]
+    }
+}
+
+impl Widget for Board {
+    fn render(self, area: tui::prelude::Rect, buf: &mut tui::prelude::Buffer) {
+        for (y, row) in (area.top()..area.bottom()).zip(self.rows()) {
+            buf.set_line(area.x, y, &Line::from(row), area.width);
         }
     }
 }
