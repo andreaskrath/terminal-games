@@ -12,14 +12,14 @@ const BOARD_WIDTH: u16 = 36;
 const BOARD_HEIGHT: u16 = 18;
 
 pub fn render<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
-    render_outer_block(frame);
-    render_board(chess, frame);
-    render_white_player(chess, frame);
-    render_black_player(chess, frame);
+    outer_block(frame);
+    board(chess, frame);
+    white_player(chess, frame);
+    black_player(chess, frame);
 }
 
 #[inline(always)]
-fn render_outer_block<B: Backend>(frame: &mut Frame<'_, B>) {
+fn outer_block<B: Backend>(frame: &mut Frame<'_, B>) {
     let outer_block = Block::default()
         .title("Chess")
         .title_alignment(Alignment::Center)
@@ -29,7 +29,7 @@ fn render_outer_block<B: Backend>(frame: &mut Frame<'_, B>) {
 }
 
 #[inline(always)]
-fn render_board<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+fn board<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
     // these centerings do not account for the row numbers and column letters
     // add 1 to both results to center in relation to the board itself
     let x_axis = (frame.size().width / 2) - (BOARD_WIDTH / 2);
@@ -39,13 +39,13 @@ fn render_board<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
 }
 
 #[inline(always)]
-fn render_black_player<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
-    render_black_player_nameplate(frame);
-    render_black_player_taken_pieces(chess, frame);
+fn black_player<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+    black_player_nameplate(frame);
+    black_player_taken_pieces(chess, frame);
 }
 
 #[inline(always)]
-fn render_black_player_nameplate<B: Backend>(frame: &mut Frame<'_, B>) {
+fn black_player_nameplate<B: Backend>(frame: &mut Frame<'_, B>) {
     let text = "BLACK PLAYER";
 
     let x_axis = (frame.size().width / 2) - (text.len() / 2) as u16;
@@ -56,7 +56,7 @@ fn render_black_player_nameplate<B: Backend>(frame: &mut Frame<'_, B>) {
 }
 
 #[inline(always)]
-fn render_black_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+fn black_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
     let taken_pieces = " ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜ ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜";
     let x_axis = (frame.size().width / 2) - (BOARD_WIDTH / 2) + 2;
     let y_axis = (frame.size().height / 2) - 13;
@@ -66,13 +66,13 @@ fn render_black_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mu
 }
 
 #[inline(always)]
-fn render_white_player<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
-    render_white_player_nameplate(frame);
-    render_white_player_taken_pieces(chess, frame);
+fn white_player<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+    white_player_nameplate(frame);
+    white_player_taken_pieces(chess, frame);
 }
 
 #[inline(always)]
-fn render_white_player_nameplate<B: Backend>(frame: &mut Frame<'_, B>) {
+fn white_player_nameplate<B: Backend>(frame: &mut Frame<'_, B>) {
     let text = "WHITE PLAYER";
 
     let x_axis = (frame.size().width / 2) - (text.len() / 2) as u16;
@@ -83,7 +83,7 @@ fn render_white_player_nameplate<B: Backend>(frame: &mut Frame<'_, B>) {
 }
 
 #[inline(always)]
-fn render_white_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+fn white_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
     let taken_pieces = " ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖ ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖";
     let x_axis = (frame.size().width / 2) - (BOARD_WIDTH / 2) + 2;
     let y_axis = (frame.size().height / 2) + 13;
