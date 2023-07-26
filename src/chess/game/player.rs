@@ -12,4 +12,8 @@ impl Player {
             taken_pieces: Vec::new(),
         }
     }
+
+    pub fn taken_pieces(&self) -> &Vec<Piece> {
+        &self.taken_pieces
+    }
 }
