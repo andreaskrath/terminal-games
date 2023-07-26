@@ -1,4 +1,4 @@
-use tui::{style::Style, text::Line, widgets::Widget};
+use tui::{text::Line, widgets::Widget};
 
 use super::pieces::Piece;
 const CHESS_BOARD_SIZE: usize = 8;
