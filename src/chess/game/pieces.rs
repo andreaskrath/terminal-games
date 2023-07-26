@@ -1,4 +1,14 @@
-pub type Piece = (PieceType, PieceColor);
+#[derive(Debug, Clone, Copy)]
+pub struct Piece {
+    color: PieceColor,
+    variant: PieceType,
+}
+
+impl Piece {
+    pub fn new(color: PieceColor, variant: PieceType) -> Self {
+        Self { color, variant }
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 pub enum PieceColor {
