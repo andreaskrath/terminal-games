@@ -1,7 +1,7 @@
 use super::Chess;
 use tui::{
     prelude::{Alignment, Backend, Rect},
-    widgets::{Block, BorderType, Borders, Paragraph},
+    widgets::{Block, BorderType, Borders, List, ListItem, Paragraph},
     Frame,
 };
 
@@ -42,6 +42,7 @@ fn board<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
 fn black_player<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
     black_player_nameplate(frame);
     black_player_taken_pieces(chess, frame);
+    black_player_moves(chess, frame);
 }
 
 #[inline(always)]
@@ -66,9 +67,33 @@ fn black_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame
 }
 
 #[inline(always)]
+fn black_player_moves<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+    let v = vec![
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+        "♖ E2->E4",
+    ];
+
+    let items: Vec<ListItem> = v.iter().map(|item| ListItem::new(*item)).collect();
+    let x_axis = (frame.size().width / 2) - 30;
+    let y_axis = (frame.size().height / 2) - 5;
+    let area = Rect::new(x_axis, y_axis, 8, items.len() as u16);
+    let moves = List::new(items);
+    frame.render_widget(moves, area);
+}
+
+#[inline(always)]
 fn white_player<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
     white_player_nameplate(frame);
     white_player_taken_pieces(chess, frame);
+    white_player_moves(chess, frame);
 }
 
 #[inline(always)]
@@ -90,4 +115,27 @@ fn white_player_taken_pieces<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame
     let area = Rect::new(x_axis, y_axis, 32, 1);
     let text = Paragraph::new(taken_pieces).alignment(Alignment::Left);
     frame.render_widget(text, area);
+}
+
+#[inline(always)]
+fn white_player_moves<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+    let v = vec![
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+        "♜ E2->E4",
+    ];
+
+    let items: Vec<ListItem> = v.iter().map(|item| ListItem::new(*item)).collect();
+    let x_axis = (frame.size().width / 2) + 22;
+    let y_axis = (frame.size().height / 2) - 5;
+    let area = Rect::new(x_axis, y_axis, 8, items.len() as u16);
+    let moves = List::new(items);
+    frame.render_widget(moves, area);
 }
