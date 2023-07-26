@@ -22,4 +22,12 @@ impl Game {
     pub fn owned_board(&self) -> Board {
         self.board.to_owned()
     }
+
+    pub fn white(&self) -> &Player {
+        &self.white
+    }
+
+    pub fn black(&self) -> &Player {
+        &self.black
+    }
 }
