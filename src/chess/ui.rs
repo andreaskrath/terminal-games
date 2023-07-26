@@ -11,11 +11,50 @@ const BOARD_WIDTH: u16 = 36;
 /// The total height of the board in characters; includes the letter markings.
 const BOARD_HEIGHT: u16 = 18;
 
+/// The minimum width the terminal requires to render all the components.
+const MINIMUM_TERMINAL_WIDTH: u16 = 62;
+
+// The minimum height the terminal requires to render all the components.
+const MINIMUM_TERMINAL_HEIGHT: u16 = 31;
+
 pub fn render<B: Backend>(chess: &mut Chess<B>, frame: &mut Frame<'_, B>) {
+    if increase_terminal_size(frame) {
+        return;
+    }
+
     outer_block(frame);
     board(chess, frame);
     white_player(chess, frame);
     black_player(chess, frame);
+}
+
+fn increase_terminal_size<B: Backend>(frame: &mut Frame<'_, B>) -> bool {
+    let placeholder = match (
+        frame.size().width < MINIMUM_TERMINAL_WIDTH,
+        frame.size().height < MINIMUM_TERMINAL_HEIGHT,
+    ) {
+        (true, true) => "width and height",
+        (true, false) => "width",
+        (false, true) => "height",
+        (false, false) => return false,
+    };
+
+    let text = format!("Please increase the {placeholder} of the terminal.");
+
+    // the programs will crash if the text cannot be rendered within the given terminal size
+    // ideally no comment at all with a super small terminal should be a dead giveaway
+    // that the terminal size is too small - alas, there is no way to actually communicate this
+    if (frame.size().width < text.len() as u16) || (frame.size().height < 1) {
+        return true;
+    }
+
+    let x_axis = (frame.size().width / 2) - (text.len() / 2) as u16;
+    let y_axis = frame.size().height / 2;
+    let area = Rect::new(x_axis, y_axis, text.len() as u16, 1);
+    let paragraph = Paragraph::new(text).alignment(Alignment::Center);
+    frame.render_widget(paragraph, area);
+
+    true
 }
 
 #[inline(always)]
