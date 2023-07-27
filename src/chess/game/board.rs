@@ -1,6 +1,6 @@
 use tui::{text::Line, widgets::Widget};
 
-use super::pieces::Piece;
+use super::piece::Piece;
 const CHESS_BOARD_SIZE: usize = 8;
 
 #[derive(Clone)]
