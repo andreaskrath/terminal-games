@@ -1,7 +1,7 @@
 use self::{board::Board, player::Player};
 
 mod board;
-mod pieces;
+mod piece;
 mod player;
 
 pub struct Game {
