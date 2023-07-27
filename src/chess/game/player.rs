@@ -1,4 +1,4 @@
-use super::{board::Position, pieces::Piece};
+use super::{board::Position, piece::Piece};
 
 pub struct Player {
     moves: Vec<(Piece, Position, Position)>,
@@ -13,7 +13,7 @@ impl Player {
         }
     }
 
-    pub fn taken_pieces(&self) -> &Vec<Piece> {
+    pub fn taken_pieces(&self) -> &[Piece] {
         &self.taken_pieces
     }
 }
