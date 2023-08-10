@@ -1,5 +1,4 @@
 use std::error;
-use tui::widgets::ListState;
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -10,8 +9,8 @@ pub struct App {
     /// Signifies whether the application is running.
     pub running: bool,
 
-    /// The currently selected game.
-    pub state: ListState,
+    /// The index of the currently selected game.
+    pub state: u8,
 
     /// The games available for selection.
     pub games: Box<[&'static str]>,
@@ -19,13 +18,11 @@ pub struct App {
 
 impl Default for App {
     fn default() -> Self {
-        let mut new = Self {
+        Self {
             running: true,
-            state: ListState::default(),
+            state: 0,
             games: Box::new(["Chess", "Minesweeper"]),
-        };
-        new.state.select(Some(0));
-        new
+        }
     }
 }
 
@@ -45,31 +42,15 @@ impl App {
 
     /// Changes the selected item, to the one directly above it, in the menu - without wrapping around.
     pub fn move_up(&mut self) {
-        let selected = match self.state.selected() {
-            Some(val) => {
-                if val == 0 {
-                    Some(val)
-                } else {
-                    Some(val - 1)
-                }
-            }
-            None => Some(0),
-        };
-        self.state.select(selected);
+        if self.state > 0 {
+            self.state -= 1;
+        }
     }
 
     /// Changes the selected item, to the one directly below it, in the menu - without wrapping around.
     pub fn move_down(&mut self) {
-        let selected = match self.state.selected() {
-            Some(val) => {
-                if val == self.games.len() - 1 {
-                    Some(val)
-                } else {
-                    Some(val + 1)
-                }
-            }
-            None => Some(0),
-        };
-        self.state.select(selected);
+        if self.state < self.games.len() as u8 - 1 {
+            self.state += 1;
+        }
     }
 }

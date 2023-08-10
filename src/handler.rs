@@ -27,7 +27,7 @@ pub fn handle_key_events<B: Backend>(
         KeyCode::Down => {
             app.move_down();
         }
-        KeyCode::Enter => match app.state.selected().expect("should always have a state") {
+        KeyCode::Enter => match app.state {
             0 => {
                 let mut chess_game = Chess::new(tui);
                 chess_game.launch_chess()?;
